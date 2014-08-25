@@ -1,0 +1,44 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JK2cgame", "cgame\JK2_cgame.vcproj", "{B7586843-5F7D-490B-B56B-A7A23EB8A03E}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JK2game", "game\JK2_game.vcproj", "{B126A967-F730-46AC-86CE-72F3E063439F}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ui", "ui\ui.vcproj", "{95A0D384-3D44-418E-ADD0-9DAD3BC0FE85}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug JK2 = Debug JK2
+		Final JK2 = Final JK2
+		Release JK2 = Release JK2
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{B7586843-5F7D-490B-B56B-A7A23EB8A03E}.Debug JK2.ActiveCfg = Debug JK2|Win32
+		{B7586843-5F7D-490B-B56B-A7A23EB8A03E}.Debug JK2.Build.0 = Debug JK2|Win32
+		{B7586843-5F7D-490B-B56B-A7A23EB8A03E}.Final JK2.ActiveCfg = Final JK2|Win32
+		{B7586843-5F7D-490B-B56B-A7A23EB8A03E}.Final JK2.Build.0 = Final JK2|Win32
+		{B7586843-5F7D-490B-B56B-A7A23EB8A03E}.Release JK2.ActiveCfg = Release JK2|Win32
+		{B7586843-5F7D-490B-B56B-A7A23EB8A03E}.Release JK2.Build.0 = Release JK2|Win32
+		{B126A967-F730-46AC-86CE-72F3E063439F}.Debug JK2.ActiveCfg = Debug JK2|Win32
+		{B126A967-F730-46AC-86CE-72F3E063439F}.Debug JK2.Build.0 = Debug JK2|Win32
+		{B126A967-F730-46AC-86CE-72F3E063439F}.Final JK2.ActiveCfg = Final JK2|Win32
+		{B126A967-F730-46AC-86CE-72F3E063439F}.Final JK2.Build.0 = Final JK2|Win32
+		{B126A967-F730-46AC-86CE-72F3E063439F}.Release JK2.ActiveCfg = Release JK2|Win32
+		{B126A967-F730-46AC-86CE-72F3E063439F}.Release JK2.Build.0 = Release JK2|Win32
+		{95A0D384-3D44-418E-ADD0-9DAD3BC0FE85}.Debug JK2.ActiveCfg = Debug JK2|Win32
+		{95A0D384-3D44-418E-ADD0-9DAD3BC0FE85}.Debug JK2.Build.0 = Debug JK2|Win32
+		{95A0D384-3D44-418E-ADD0-9DAD3BC0FE85}.Final JK2.ActiveCfg = Final JK2|Win32
+		{95A0D384-3D44-418E-ADD0-9DAD3BC0FE85}.Final JK2.Build.0 = Final JK2|Win32
+		{95A0D384-3D44-418E-ADD0-9DAD3BC0FE85}.Release JK2.ActiveCfg = Release JK2|Win32
+		{95A0D384-3D44-418E-ADD0-9DAD3BC0FE85}.Release JK2.Build.0 = Release JK2|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

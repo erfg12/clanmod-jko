@@ -1,0 +1,51 @@
+JediDog: Note: you can find all changes by just searching JediDog in the code.
+
+v2.04
+-Fixed Anti Flood
+-Fixed Anti Force Crash
+-Fixed ClientNum Server Crash
+-Fixed Server msg next line bug
+-Enhanced Anti MSGBoom
+-Added Anti Fake Players
+-Added Fix for Duel Challenge Get-up Bug
+-Added a New Enhanced version of Anti Name Crash
+-Removed old Anti Name Crash
+-Removed cm_antiNameCrash cmd
+-Removed cm_antiFlood cmd
+-Removed cm_antiForceCrash cmd
+-Removed Anti Name Crash, Anti Force Crash, and Anti MSGBoom Messages & Logs
+
+G_CLIENTS.C:
+-Fixed the anti flood so that the bots don't appear as "ghosts."
+-Added command "cm_antiFlood" to turn off and on anti flood.
+-Added Anti Fake Players code under ClientConnect
+-Added anti name crash in userinfo instead of clientconnect (much better)
+-Removed anti name crash out of clientconnect
+-Removed anti flood's command
+
+G_CMDS.C:
+-Fixed all commands (client & admin) client number crash bug (if (client_id < 0 || client_id >= MAX_CLIENTS)
+-Added a fix for duel challenge bug
+
+G_LOCAL.H:
+-Added "extern vmCvar_t cm_antiFlood;"
+-Removed "extern vmCvar_t cm_antiNameCrash;"
+-Removed "extern vmCvar_t cm_antiForceCrash;"
+-Removed "extern vmCvar_t cm_antiFlood;"
+
+G_MAIN.C:
+-Removed command "cm_antiFlood"
+-Removed command "cm_antiNameCrash"
+-Removed command "cm_antiForceCrash"
+
+G_SVCMDS.C:
+-Fixed all commands from the clientnumber crash (if (client_id < 0 || client_id >= MAX_CLIENTS)
+-Fixed next line bug "...trap_SendServerCommand(-1, va("print\"Server: %s\n\""..."
+
+G_SYSCALLS.C:
+-Enhanced anti msgboom by changing 1022 to 1000
+-Removed logs off of anti msgboom
+
+W_FORCE.C:
+-Changed /0 to 0 because of typo fixing a possible bug allowing clients to crash the server
+

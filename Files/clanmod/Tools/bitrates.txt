@@ -1,0 +1,125 @@
+BitRate values are listed below.
+
+==============================
+dmflags
+-------
+MP FLAGS
+
+No Fall damage = 8
+Fixed FoV = 16
+No Footsteps = 32
+
+==============================
+g_weaponDisable
+---------------
+WEAPONS
+
+Stun Baton = 2
+Bryar Pistol = 8
+Blaster = 16
+Distruptor = 32
+Bowcaster = 64
+Repeater = 128
+Demp2 = 256
+Flechette = 512
+Rocket Launcher = 1024
+Thermal = 2048
+Trip Mine = 4096
+Det Pack = 8192
+Emplaced Gun = 16384
+Turret = 32768
+
+==============================
+g_forcePowerDisable
+-------------------
+FORCE POWERS
+
+Heal = 1
+Jump = 2
+Speed = 4
+Push = 8
+Pull = 16
+Mind Trick = 32
+Grip = 64
+Lightning = 128
+Rage = 256
+Protect = 512
+Absorb = 1024
+Team Heal = 2048
+Team Force = 4096
+Drain = 8192
+Sense = 16384
+Saber Offense = 32768
+Saber Defense = 65536
+Saber Throw = 131072
+
+==============================
+cm_voteControl
+-------
+VOTE CONTROL
+
+Map Restart = 1
+NextMap = 2
+Map = 4
+G_Gametype = 8
+Kick = 16
+ClientKick = 32
+G_DoWarmUp = 64
+TimeLimit = 128
+FragLimit = 256
+
+==============================
+cm_emoteControl
+---------------
+EMOTE CONTROL
+
+Sit = 1
+Beg = 2
+Flip = 4
+Cocky = 8
+Bounce = 16
+BreakDance = 32
+Kneel = 64
+Kiss = 128
+Scratch = 256
+Dunno = 512
+Power = 1024
+Lol = 2048
+Throw = 4096
+Throw2 = 8192
+Throw3 = 16384
+Shrug = 32768
+ThumbsDown = 65536
+Draw = 131072
+Dance = 262144
+Dance2 = 524288
+Nod = 1048576
+Shake = 2097152
+
+==============================
+cm_adminControl1
+cm_adminControl2
+cm_adminControl3
+----------------
+ADMIN CONTROL
+
+AdminTele = 1
+Silence = 2
+Protect = 4
+AdminBan = 8
+AdminKick = 16
+g2animent = 32
+Terminator = 64
+Slay = 128
+ChangeMap = 256
+Empower = 512
+Rename = 1024
+ForceTeam = 2048
+Punish = 4096
+Sleep = 8192
+Slap = 16384
+LockTeam = 32768
+CSPrint = 65536
+ChangeMode = 131072
+
+==============================
