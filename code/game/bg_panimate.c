@@ -881,7 +881,7 @@ qboolean BG_ParseAnimationFile(const char *filename)
 		{
 			if (bgGlobalAnimations[i].firstFrame <= 0 && bgGlobalAnimations[i].numFrames <=0)
 			{	// This is an empty animation reference.
-				Com_Printf("***ANIMTABLE reference #%d (%s) is empty!\n", i, animTable[i].name);
+				//Com_Printf("***ANIMTABLE reference #%d (%s) is empty!\n", i, animTable[i].name); //cm newage: annoying
 			}
 		}
 	}

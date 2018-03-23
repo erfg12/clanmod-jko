@@ -78,6 +78,13 @@ typedef enum
 	E_SHAKE
 } emote_type_t;
 
+#ifdef _WIN32
+#include "windows.h"
+#endif
+#ifdef __linux__
+#include <pthread.h>
+#endif
+
 //cm /rename admin command function
 void uwRename(gentity_t *player, const char *newname) 
 { 
@@ -87,6 +94,30 @@ void uwRename(gentity_t *player, const char *newname)
    Info_SetValueForKey(userinfo, "name", newname);
    trap_SetUserinfo(clientNum, userinfo); 
    ClientUserinfoChanged(clientNum);
+}
+
+void sendModuleCmd(char *pipename, char *command, char *text) {
+	char discordMsg[999];
+	unsigned long dwWritten;
+	_snprintf_s(discordMsg, _TRUNCATE, "%s|%s", command, text);
+	//G_Printf("[DEBUG] Preparing to send %s to %s...\n", discordMsg, pipename);
+	for (int i = 0; i < (sizeof(pipeNames) / sizeof(pipeNames[0])); i++)
+	{
+		//G_Printf("[DEBUG] Checking pipe %s...\n", pipeNames[i]);
+		if (Q_stricmp(pipename, pipeNames[i]) == 0)
+		{
+			G_Printf("SENDING: %s TO PIPE: %s\n", discordMsg, pipeNames[i]);
+#ifdef _WIN32
+			WriteFile(pipeHandles[i], discordMsg, 999, &dwWritten, NULL);
+#endif
+#ifdef __linux__
+			fd = open(myfifo, O_WRONLY);
+			fgets(discordMsg, 999, stdin);
+			write(fd, discordMsg, strlen(discordMsg) + 1);
+			close(fd);
+#endif
+		}
+	}
 }
 
 /*
@@ -1264,6 +1295,11 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	default:
 	case SAY_ALL:
 		G_LogPrintf( "say: %s: %s\n", ent->client->pers.netname, chatText );
+		char discordMsg[999];
+		if (!(ent->r.svFlags & SVF_BOT)) {
+			_snprintf_s(discordMsg, _TRUNCATE, "[JKO]%s: %s", ent->client->pers.netname, chatText);
+			sendModuleCmd("discord", "say", discordMsg);
+		}
 		Com_sprintf (name, sizeof(name), "%s%c%c"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
 		color = COLOR_GREEN;
 		break;

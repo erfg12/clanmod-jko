@@ -177,10 +177,22 @@ vmCvar_t	cm_teleport_saying;
 vmCvar_t	cm_clanLogin_saying;
 vmCvar_t	cm_clanLogout_saying;
 vmCvar_t	cm_botsattackhumans;
+vmCvar_t	cm_extensions;
 //cm END
 
 int gDuelist1 = -1;
 int gDuelist2 = -1;
+
+char *strsep(char **stringp, const char *delim) {
+	if (*stringp == NULL) { return NULL; }
+	char *token_start = *stringp;
+	*stringp = strpbrk(token_start, delim);
+	if (*stringp) {
+		**stringp = '\0';
+		(*stringp)++;
+	}
+	return token_start;
+}
 
 // bk001129 - made static to avoid aliasing
 static cvarTable_t		gameCvarTable[] = {
@@ -380,6 +392,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &cm_clanLogin_saying, "cm_clanLogin_saying", "is a clan member!", CVAR_ARCHIVE, 0, qfalse  },
 	{ &cm_clanLogout_saying, "cm_clanLogout_saying", "is a no longer a clan member.", CVAR_ARCHIVE, 0, qfalse  },
 	{ &cm_botsattackhumans,  "cm_botsattackhumans", "0", CVAR_ARCHIVE, 0, qtrue  },
+	{ &cm_extensions, "cm_extensions", "", CVAR_ARCHIVE, 0, qtrue },
 	//cm END
 };
 // bk001129 - made static to avoid aliasing
@@ -391,6 +404,118 @@ void G_RunFrame					( int levelTime );
 void G_ShutdownGame				( int restart );
 void CheckExitRules				( void );
 void G_ROFF_NotetrackCallback	( gentity_t *cent, const char *notetrack);
+
+
+//named pipes
+#ifdef _WIN32
+#include <windows.h>
+#include <tchar.h>
+#endif
+#ifdef __linux__
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#endif
+
+void cm_makePipes(const char *pipename, int pipeNum) {
+	G_Printf("Listening for %s extension...\n", pipename);
+#if defined(_WIN32) 
+	char realName[255];
+	sprintf(realName, "%s%s", "\\\\.\\pipe\\", pipename);
+	pipeHandles[pipeNum] = CreateNamedPipe(realName, PIPE_ACCESS_INBOUND | PIPE_ACCESS_OUTBOUND, PIPE_NOWAIT, 1, 1024, 1024, NMPWAIT_USE_DEFAULT_WAIT, NULL);
+	pipeNames[pipeNum] = pipename;
+	if (pipeHandles[pipeNum] == INVALID_HANDLE_VALUE)
+	{
+		G_Printf("Named Pipe %s Failed Err: %d\n", pipename, GetLastError());
+	}
+#endif
+#ifdef __linux__
+	char myfifo[255];
+	sprintf(myfifo, "%s%s", "/tmp/", pipename);
+	mkfifo(myfifo, 0666);
+#endif
+}
+
+#ifdef _WIN32
+DWORD WINAPI windowsThread(LPVOID lpParameter) {
+	printf("listening thread is running\n");
+	while (1) {
+		const char *my_str_literal = cm_extensions.string;
+		char *str = strdup(my_str_literal);
+		char *token;
+		int i = 0;
+		while ((token = strsep(&str, ";")) != NULL) { //listen to all pipes for commands
+			char data[1000];
+			DWORD numRead;
+			ConnectNamedPipe(pipeHandles[i], NULL);
+			DWORD bytesAvail = 0;
+			BOOL isOK = PeekNamedPipe(pipeHandles[i], NULL, 0, NULL, &bytesAvail, NULL);
+			if (bytesAvail > 0) {
+				ReadFile(pipeHandles[i], data, 1000, &numRead, NULL);
+				if (numRead > 0) {
+					printf("RECEIVED: %s\n", data);
+					if (strstr(data, "|") != NULL) {
+						char *token = strtok(data, "|");
+						char *array[2];
+						int i = 0;
+						while (token != NULL)
+						{
+							if (i == 2) break;
+							array[i++] = token;
+							token = strtok(NULL, "|");
+						}
+						//printf("Recognized command: %s\n", array[0]);
+						if (strstr("say", array[0]) != NULL) { //say command
+															   //printf("Sending text: %s\n", array[1]);
+							trap_SendServerCommand(-1, va("%s \"%s\"", "chat", array[1]));
+						}
+					}
+				}
+			}
+			i++;
+		}
+	}
+	return 0;
+}
+#endif
+#ifdef __linux__
+void *linuxThread(void *sntCmd)
+{
+	printf("listening thread is running\n");
+	while (1) {
+		const char *my_str_literal = cm_extensions.string;
+		char *str = strdup(my_str_literal);
+		char *token;
+		int i = 0;
+		while ((token = strsep(&str, ";")) != NULL) {
+			char data[1000];
+			unsigned long numRead;
+			fd = open(pipeHandles[i], O_RDONLY);
+			read(fd, data, sizeof(data));
+			printf("RECEIVED: %s\n", data);
+			if (strstr(data, "|") != NULL) {
+				char *token = strtok(data, "|");
+				char *array[2];
+				int i = 0;
+				while (token != NULL)
+				{
+					if (i == 2) break;
+					array[i++] = token;
+					token = strtok(NULL, "|");
+				}
+				//printf("Recognized command: %s\n", array[0]);
+				if (strstr("say", array[0]) != NULL) { //say command
+					//printf("Sending text: %s\n", array[1]);
+					trap_SendServerCommand(-1, va("%s \"%s\"", "chat", array[1]));
+				}
+			}
+			close(fd);
+			i++;
+		}
+	}
+}
+#endif
 
 
 /*
@@ -731,6 +856,37 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	if ( g_gametype.integer == GT_TOURNAMENT )
 	{
 		G_LogPrintf("Duel Tournament Begun: kill limit %d, win limit: %d\n", g_fraglimit.integer, g_duel_fraglimit.integer );
+	}
+
+	if (*cm_extensions.string && cm_extensions.string[0]) {
+		//make named pipes
+		const char *my_str_literal = cm_extensions.string;
+		char *str = strdup(my_str_literal);
+		char *token;
+		int i = 0;
+		while ((token = strsep(&str, ";"))) {
+			cm_makePipes(token, i);
+			i++;
+		}
+		//free(str);
+
+		//make listening threads
+#ifdef _WIN32
+		DWORD   threadID;
+		HANDLE thread = CreateThread(NULL, 0, windowsThread, NULL, 0, &threadID);
+		CloseHandle(thread); //detach
+		if (thread == NULL) {
+			G_Printf("ERROR: Thread Handle is null!");
+		}
+		if (threadID == NULL) {
+			G_Printf("ERROR: Thread ID is null!");
+		}
+#endif
+#ifdef __linux__
+		pthread_t tid;
+		pthread_create(&tid, NULL, &linuxThread, &cmd);
+		pthread_detach(&tid);
+#endif
 	}
 }
 

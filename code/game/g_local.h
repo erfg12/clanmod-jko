@@ -1132,6 +1132,9 @@ extern	vmCvar_t	cm_teleport_saying;
 extern	vmCvar_t	cm_clanLogin_saying;
 extern	vmCvar_t	cm_clanLogout_saying;
 extern	vmCvar_t	cm_botsattackhumans;
+extern	vmCvar_t	cm_extensions;
+qhandle_t pipeHandles[100]; //stored pipes for extensions
+const char *pipeNames[100];
 //cm END
 
 void	trap_Printf( const char *fmt );
