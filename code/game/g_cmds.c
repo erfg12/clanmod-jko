@@ -99,8 +99,8 @@ void uwRename(gentity_t *player, const char *newname)
 void sendModuleCmd(char *pipename, char *command, char *text) {
 	char discordMsg[999];
 	unsigned long dwWritten;
-	_snprintf_s(discordMsg, _TRUNCATE, "%s|%s", command, text);
-	//G_Printf("[DEBUG] Preparing to send %s to %s...\n", discordMsg, pipename);
+	_snprintf_s(discordMsg, sizeof(discordMsg), _TRUNCATE, "%s|%s", command, text);
+	G_Printf("[DEBUG] sendModuleCmd command:%s text:%s\n", command, text);
 	for (int i = 0; i < (sizeof(pipeNames) / sizeof(pipeNames[0])); i++)
 	{
 		//G_Printf("[DEBUG] Checking pipe %s...\n", pipeNames[i]);
@@ -1297,7 +1297,7 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 		G_LogPrintf( "say: %s: %s\n", ent->client->pers.netname, chatText );
 		char discordMsg[999];
 		if (!(ent->r.svFlags & SVF_BOT)) {
-			_snprintf_s(discordMsg, _TRUNCATE, "[JKO]%s: %s", ent->client->pers.netname, chatText);
+			_snprintf_s(discordMsg, sizeof(discordMsg), _TRUNCATE, "[JKO]%s: %s", ent->client->pers.netname, chatText);
 			sendModuleCmd("discord", "say", discordMsg);
 		}
 		Com_sprintf (name, sizeof(name), "%s%c%c"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
