@@ -96,7 +96,7 @@ void uwRename(gentity_t *player, const char *newname)
    ClientUserinfoChanged(clientNum);
 }
 
-void sendModuleCmd(char *pipename, char *command, char *text) {
+void sendExtensionCmd(char *command, char *text, char *pipename) {
 	char discordMsg[999];
 	unsigned long dwWritten;
 	_snprintf_s(discordMsg, sizeof(discordMsg), _TRUNCATE, "%s|%s", command, text);
@@ -104,7 +104,7 @@ void sendModuleCmd(char *pipename, char *command, char *text) {
 	for (int i = 0; i < (sizeof(pipeNames) / sizeof(pipeNames[0])); i++)
 	{
 		//G_Printf("[DEBUG] Checking pipe %s...\n", pipeNames[i]);
-		if (Q_stricmp(pipename, pipeNames[i]) == 0)
+		if (strlen(pipename) > 0 && Q_stricmp(pipename, pipeNames[i]) == 0)
 		{
 			//G_Printf("SENDING: %s TO PIPE: %s\n", discordMsg, pipeNames[i]);
 #ifdef _WIN32
@@ -1298,7 +1298,7 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 		char discordMsg[999];
 		if (!(ent->r.svFlags & SVF_BOT)) {
 			_snprintf_s(discordMsg, sizeof(discordMsg), _TRUNCATE, "[JKO]%s: %s", ent->client->pers.netname, chatText);
-			sendModuleCmd("discord", "say", discordMsg);
+			sendExtensionCmd("say", discordMsg, 0); //say to all extensions
 		}
 		Com_sprintf (name, sizeof(name), "%s%c%c"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
 		color = COLOR_GREEN;
