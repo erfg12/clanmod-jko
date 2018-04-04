@@ -100,13 +100,13 @@ void sendModuleCmd(char *pipename, char *command, char *text) {
 	char discordMsg[999];
 	unsigned long dwWritten;
 	_snprintf_s(discordMsg, sizeof(discordMsg), _TRUNCATE, "%s|%s", command, text);
-	G_Printf("[DEBUG] sendModuleCmd command:%s text:%s\n", command, text);
+	//G_Printf("[DEBUG] sendModuleCmd command:%s text:%s\n", command, text);
 	for (int i = 0; i < (sizeof(pipeNames) / sizeof(pipeNames[0])); i++)
 	{
 		//G_Printf("[DEBUG] Checking pipe %s...\n", pipeNames[i]);
 		if (Q_stricmp(pipename, pipeNames[i]) == 0)
 		{
-			G_Printf("SENDING: %s TO PIPE: %s\n", discordMsg, pipeNames[i]);
+			//G_Printf("SENDING: %s TO PIPE: %s\n", discordMsg, pipeNames[i]);
 #ifdef _WIN32
 			WriteFile(pipeHandles[i], discordMsg, 999, &dwWritten, NULL);
 #endif
