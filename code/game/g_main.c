@@ -420,16 +420,22 @@ void G_ROFF_NotetrackCallback	( gentity_t *cent, const char *notetrack);
 #include <unistd.h>
 #endif
 
+int pConnections = 0;
+
 void cm_makePipes(const char *pipename, int pipeNum) {
 	G_Printf("Listening for %s extension...\n", pipename);
 #if defined(_WIN32) 
 	char realName[255];
-	sprintf(realName, "%s%s-%s", "\\\\.\\pipe\\", pipename, cm_uniquePipeName.string);
+	_snprintf_s(realName, sizeof(realName), _TRUNCATE, "%s%s-%s", "\\\\.\\pipe\\", pipename, cm_uniquePipeName.string);
 	pipeHandles[pipeNum] = CreateNamedPipe(realName, PIPE_ACCESS_INBOUND | PIPE_ACCESS_OUTBOUND, PIPE_NOWAIT, 1, 1024, 1024, NMPWAIT_USE_DEFAULT_WAIT, NULL);
-	pipeNames[pipeNum] = pipename;
+	strcpy(pipeNames[pipeNum], realName);
 	if (pipeHandles[pipeNum] == INVALID_HANDLE_VALUE)
 	{
-		G_Printf("Named Pipe %s Failed Err: %d\n", pipename, GetLastError());
+		G_Printf("Named Pipe %s Failed Err: %d\n", realName, GetLastError());
+	}
+	else {
+		//	G_Printf("creating namedpipe %s", realName);
+		pConnections++;
 	}
 #endif
 #ifdef __linux__
@@ -457,6 +463,9 @@ DWORD WINAPI windowsThread(LPVOID lpParameter) {
 				ReadFile(pipeHandles[i], data, 1000, &numRead, NULL);
 				if (numRead > 0) {
 					printf("RECEIVED: %s\n", data);
+					char discordMsg[255];
+					_snprintf_s(discordMsg, sizeof(discordMsg), _TRUNCATE, "Server is connected.");
+					sendExtensionCmd("say", discordMsg, 0);
 					if (strstr(data, "|") != NULL) {
 						char *token = strtok(data, "|");
 						char *array[2];

@@ -1135,7 +1135,8 @@ extern	vmCvar_t	cm_botsattackhumans;
 extern	vmCvar_t	cm_extensions;
 extern	vmCvar_t	cm_uniquePipeName;
 qhandle_t pipeHandles[100]; //stored pipes for extensions
-const char *pipeNames[100];
+char pipeNames[100][100];
+extern int pConnections;
 //cm END
 
 void	trap_Printf( const char *fmt );

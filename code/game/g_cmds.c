@@ -100,23 +100,28 @@ void sendExtensionCmd(char *command, char *text, char *pipename) {
 	char discordMsg[999];
 	unsigned long dwWritten;
 	_snprintf_s(discordMsg, sizeof(discordMsg), _TRUNCATE, "%s|%s", command, text);
-	//G_Printf("[DEBUG] sendModuleCmd command:%s text:%s\n", command, text);
-	for (int i = 0; i < (sizeof(pipeNames) / sizeof(pipeNames[0])); i++)
+	//G_Printf("[DEBUG] sending:%s connections:%i\n", discordMsg, pConnections);
+	for (int i = 0; i < pConnections; i++)
 	{
-		//G_Printf("[DEBUG] Checking pipe %s...\n", pipeNames[i]);
-		if (strlen(pipename) > 0 && Q_stricmp(pipename, pipeNames[i]) == 0)
-		{
-			//G_Printf("SENDING: %s TO PIPE: %s\n", discordMsg, pipeNames[i]);
-#ifdef _WIN32
+		if (pipename != 0 && Q_stricmp(pipename, pipeNames[i]) != 0) return;
+		//G_Printf("[DEBUG] SENDING: %s TO PIPE: %s\n", discordMsg, pipeNames[i]);
+#ifdef WIN32
+		if (pipeHandles[i] == INVALID_HANDLE_VALUE) {
+			G_Printf("%s (#%i) handle is invalid", pipeNames[i], i);
+		}
+		else {
+			ConnectNamedPipe(pipeHandles[i], NULL);
 			WriteFile(pipeHandles[i], discordMsg, 999, &dwWritten, NULL);
+			//G_Printf("%s (#%i) handle is valid", pipeNames[i], i);
+		}
+			
 #endif
 #ifdef __linux__
-			fd = open(myfifo, O_WRONLY);
-			fgets(discordMsg, 999, stdin);
-			write(fd, discordMsg, strlen(discordMsg) + 1);
-			close(fd);
+		fd = open(myfifo, O_WRONLY);
+		fgets(discordMsg, 999, stdin);
+		write(fd, discordMsg, strlen(discordMsg) + 1);
+		close(fd);
 #endif
-		}
 	}
 }
 
