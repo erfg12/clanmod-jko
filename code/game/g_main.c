@@ -424,25 +424,23 @@ int pConnections = 0;
 
 void cm_makePipes(const char *pipename, int pipeNum) {
 	G_Printf("Listening for %s extension...\n", pipename);
-#if defined(_WIN32) 
 	char realName[255];
 	_snprintf_s(realName, sizeof(realName), _TRUNCATE, "%s%s-%s", "\\\\.\\pipe\\", pipename, cm_uniquePipeName.string);
+#ifdef _WIN32
 	pipeHandles[pipeNum] = CreateNamedPipe(realName, PIPE_ACCESS_INBOUND | PIPE_ACCESS_OUTBOUND, PIPE_NOWAIT, 1, 1024, 1024, NMPWAIT_USE_DEFAULT_WAIT, NULL);
 	strcpy(pipeNames[pipeNum], realName);
 	if (pipeHandles[pipeNum] == INVALID_HANDLE_VALUE)
 	{
 		G_Printf("Named Pipe %s Failed Err: %d\n", realName, GetLastError());
-	}
-	else {
-		//	G_Printf("creating namedpipe %s", realName);
-		pConnections++;
+		return;
 	}
 #endif
 #ifdef __linux__
 	char myfifo[255];
-	sprintf(myfifo, "%s%s", "/tmp/", pipename);
+	sprintf(myfifo, "%s%s-%s", "/tmp/", pipename, cm_uniquePipeName.string);
 	mkfifo(myfifo, 0666);
 #endif
+	pConnections++;
 }
 
 #ifdef _WIN32
