@@ -463,9 +463,6 @@ DWORD WINAPI windowsThread(LPVOID lpParameter) {
 				ReadFile(pipeHandles[i], data, 1000, &numRead, NULL);
 				if (numRead > 0) {
 					printf("RECEIVED: %s\n", data);
-					char discordMsg[255];
-					_snprintf_s(discordMsg, sizeof(discordMsg), _TRUNCATE, "Server is connected.");
-					sendExtensionCmd("say", discordMsg, 0);
 					if (strstr(data, "|") != NULL) {
 						char *token = strtok(data, "|");
 						char *array[2];
@@ -478,7 +475,7 @@ DWORD WINAPI windowsThread(LPVOID lpParameter) {
 						}
 						//printf("Recognized command: %s\n", array[0]);
 						if (strstr("say", array[0]) != NULL) { //say command
-															   //printf("Sending text: %s\n", array[1]);
+							//printf("Sending text: %s\n", array[1]);
 							trap_SendServerCommand(-1, va("%s \"%s\"", "chat", array[1]));
 						}
 					}
