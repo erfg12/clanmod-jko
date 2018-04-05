@@ -436,9 +436,8 @@ void cm_makePipes(const char *pipename, int pipeNum) {
 	}
 #endif
 #ifdef __linux__
-	char myfifo[255];
-	sprintf(myfifo, "%s%s-%s", "/tmp/", pipename, cm_uniquePipeName.string);
-	mkfifo(myfifo, 0666);
+	sprintf(fifoNames[pipeNum], "%s%s-%s", "/tmp/", pipename, cm_uniquePipeName.string);
+	mkfifo(fifoNames[pipeNum], 0666);
 #endif
 	pConnections++;
 }

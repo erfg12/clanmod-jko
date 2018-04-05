@@ -117,10 +117,10 @@ void sendExtensionCmd(char *command, char *text, char *pipename) {
 			
 #endif
 #ifdef __linux__
-		fd = open(myfifo, O_WRONLY);
+		fd = open(fifoNames[i], O_WRONLY);
 		fgets(discordMsg, 999, stdin);
-		write(fd, discordMsg, strlen(discordMsg) + 1);
-		close(fd);
+		write(fifoNames[i], discordMsg, strlen(discordMsg) + 1);
+		close(fifoNames[i]);
 #endif
 	}
 }
