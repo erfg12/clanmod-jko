@@ -19,6 +19,7 @@
     <SccProjectName />
     <SccLocalPath />
     <ProjectGuid>{B7586843-5F7D-490B-B56B-A7A23EB8A03E}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release JK2|Win32'" Label="Configuration">

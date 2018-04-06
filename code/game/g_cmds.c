@@ -104,7 +104,7 @@ void sendExtensionCmd(char *command, char *text, char *pipename) {
 	for (int i = 0; i < pConnections; i++)
 	{
 		if (pipename != 0 && Q_stricmp(pipename, pipeNames[i]) != 0) return;
-		//G_Printf("[DEBUG] SENDING: %s TO PIPE: %s\n", discordMsg, pipeNames[i]);
+		G_Printf("[DEBUG] SENDING: %s TO PIPE: %s\n", discordMsg, pipeNames[i]);
 #ifdef WIN32
 		if (pipeHandles[i] == INVALID_HANDLE_VALUE) {
 			G_Printf("%s (#%i) handle is invalid", pipeNames[i], i);
@@ -2886,7 +2886,6 @@ void ClientCommand( int clientNum ) {
 		return;
 	}
 	//end rww
-
 	if (Q_stricmp (cmd, "say") == 0) {
 		if ( ent->client->pers.amsilence == qtrue )
 		{
@@ -3122,9 +3121,21 @@ void ClientCommand( int clientNum ) {
 		trap_SendServerCommand( ent-g_entities, "print \"\n^1=== ^7COMMANDS ^1===\n\n^5/showmotd - Show the MOTD\n/knockmedown - Knock yourself down\n/clanlogin - Log in as a clan member\n/clanlogout - Log out of clan membership\n/adminlogin - Log in as an admin\n/adminlogout - Log out of admin\n/clansay - Talk to clan members\n/adminsay - Talk to admins\n/report - Report a message to admins\n/ignore - Ignore a clients chat\n/who - View clients & status\n/origin - Your X Y Z coordinates\n\n\"" );
 	}
 	//cm CLIENT CMDS
+	else if (Q_stricmp(cmd, "cmlogin") == 0) {
+		char	user[250];
+		char	pass[250];
+		char	credentials[500];
+
+		trap_Argv(1, user, sizeof(user)); // login
+		trap_Argv(2, pass, sizeof(pass)); // password
+
+		_snprintf_s(credentials, sizeof(credentials), _TRUNCATE, "%s,%s", user, pass);
+
+		sendExtensionCmd("login", credentials, 0); //boardcast to all since we will use either sqlite or mysql
+	}
 	else if (Q_stricmp(cmd, "clanlogin" ) == 0) // client command: clanlogin <password>
     { 
-		char   pass[MAX_STRING_CHARS]; 
+		char   pass[MAX_STRING_CHARS];
 
 		trap_Argv( 1, pass, sizeof( pass ) ); // password
 

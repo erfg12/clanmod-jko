@@ -19,6 +19,7 @@
     <SccProjectName />
     <SccLocalPath />
     <ProjectGuid>{B126A967-F730-46AC-86CE-72F3E063439F}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug JK2|Win32'" Label="Configuration">
