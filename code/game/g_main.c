@@ -448,7 +448,7 @@ DWORD WINAPI windowsThread(LPVOID lpParameter) {
 	while (1) {
 		const char *my_str_literal = cm_extensions.string;
 		char *str = strdup(my_str_literal);
-		char *token;
+		char *token, *next_token2;
 		int i = 0;
 		while ((token = strsep(&str, ";")) != NULL) { //listen to all pipes for commands
 			char data[1000];
@@ -463,6 +463,7 @@ DWORD WINAPI windowsThread(LPVOID lpParameter) {
 					if (strstr(data, "|") != NULL) {
 						char *token = strtok(data, "|");
 						char *array[2];
+						char *args[25];
 						int i = 0;
 						while (token != NULL)
 						{
@@ -470,10 +471,29 @@ DWORD WINAPI windowsThread(LPVOID lpParameter) {
 							array[i++] = token;
 							token = strtok(NULL, "|");
 						}
+						i = 0;
+						if (strstr(array[1], ",") != NULL) {
+							char *token2 = strtok_s(array[1], ",", &next_token2);
+							while (token2 != NULL)
+							{
+								if (i == 25) break;
+								args[i++] = token2;
+								token2 = strtok_s(NULL, ",", &next_token2);
+							}
+						}
 						//printf("Recognized command: %s\n", array[0]);
 						if (strstr("say", array[0]) != NULL) { //say command
 							//printf("Sending text: %s\n", array[1]);
 							trap_SendServerCommand(-1, va("%s \"%s\"", "chat", array[1]));
+						}
+						if (strstr("login", array[0]) != NULL) {
+							int clientID, dbID;
+							sscanf(args[0], "%d", &clientID);
+							sscanf(args[1], "%d", &dbID);
+							if (dbID > 0)
+								trap_SendServerCommand(clientID, va("print \"^2You have successfully logged in!\n\""));
+							else
+								trap_SendServerCommand(clientID, va("print \"^1Incorrect username/password.\n\""));
 						}
 					}
 				}

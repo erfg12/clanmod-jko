@@ -1281,10 +1281,10 @@ void ClientUserinfoChanged( int clientNum ) {
 	if (Q_stristr(client->pers.netname, cm_clanTag.string)){
 			if (!(ent->r.svFlags & SVF_CLAN) && *cm_clanTag.string && cm_clanTag.string[0]){
 				client->cmClanTimer = 30;
-				client->pers.amclanreserved = 1;
+				client->pers.amclanreserved = qtrue;
 			}
 	} else {
-		client->pers.amclanreserved = 0;
+		client->pers.amclanreserved = qfalse;
 	}
 
 	if ( client->sess.sessionTeam == TEAM_SPECTATOR ) {
@@ -1699,7 +1699,7 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 		if (Q_stristr(client->pers.netname, cm_clanTag.string)){
 			if (!(ent->r.svFlags & SVF_CLAN) && *cm_clanTag.string && cm_clanTag.string[0]){
 				client->cmClanTimer = 30;
-				client->pers.amclanreserved = 1;
+				client->pers.amclanreserved = qtrue;
 			}
 		}
 
@@ -2289,7 +2289,8 @@ void ClientDisconnect( int clientNum ) {
 	ent->client->pers.amsilence = qfalse;
 	ent->client->pers.ampunish = qfalse;
 	ent->client->pers.amsleep = qfalse;
-	ent->client->pers.amclanreserved = 0;
+	ent->client->sess.cmDBid = 0;
+	ent->client->pers.amclanreserved = qfalse;
 	ent->client->pers.dualBlade = qfalse;
 	ent->r.svFlags &= ~SVF_ADMIN1; // prevent admin from being carried over to new players and bots
 	ent->r.svFlags &= ~SVF_ADMIN2;

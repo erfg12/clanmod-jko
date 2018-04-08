@@ -318,6 +318,7 @@ typedef struct {
 	qboolean	teamLeader;			// true when this client is a team leader
 	int			chatIgnoreClients[2];
 	char		IPstring[64];		//cm BanClients
+	int			cmDBid;				//cm database id
 } clientSession_t;
 
 //
@@ -341,12 +342,12 @@ typedef struct {
 	int			teamVoteCount;		// to prevent people from constantly calling votes
 	qboolean	teamInfo;			// send team overlay updates?
 	//cm BEGIN
-	int			amempower;
-	int			amterminator;
-	int			amsilence;
-	int			ampunish;
-	int			amsleep;
-	int			amclanreserved;
+	qboolean	amempower;
+	qboolean	amterminator;
+	qboolean	amsilence;
+	qboolean	ampunish;
+	qboolean	amsleep;
+	qboolean	amclanreserved;
 	int			forcePowersKnownSaved;	// Used to save and restore your known forcepowers when unempowering is used.
 	int			forcePowerLevelSaved[NUM_FORCE_POWERS]; // Used to save your old level when empowering is used and restoring it later.
 	qboolean	dualBlade;

@@ -3129,9 +3129,43 @@ void ClientCommand( int clientNum ) {
 		trap_Argv(1, user, sizeof(user)); // login
 		trap_Argv(2, pass, sizeof(pass)); // password
 
-		_snprintf_s(credentials, sizeof(credentials), _TRUNCATE, "%s,%s", user, pass);
+		_snprintf_s(credentials, sizeof(credentials), _TRUNCATE, "%i,%s,%s", ent->client->ps.clientNum, user, pass);
 
 		sendExtensionCmd("login", credentials, 0); //boardcast to all since we will use either sqlite or mysql
+	}
+	else if (Q_stricmp(cmd, "cmregister") == 0) {
+		char	user[250];
+		char	pass[250];
+		char	credentials[500];
+
+		if (ent->client->sess.cmDBid > 0) {
+			trap_SendServerCommand(clientNum, "print \"ERROR: You are already logged in as a clan mod user.\n\"");
+			return;
+		}
+
+		trap_Argv(1, user, sizeof(user)); // login
+		trap_Argv(2, pass, sizeof(pass)); // password
+
+		_snprintf_s(credentials, sizeof(credentials), _TRUNCATE, "%i,%s,%s", ent->client->ps.clientNum, user, pass);
+
+		sendExtensionCmd("register", credentials, 0); //boardcast to all since we will use either sqlite or mysql
+	}
+	else if (Q_stricmp(cmd, "cmstats") == 0) {
+		char	user[250];
+		char	pass[250];
+		char	credentials[500];
+
+		if (ent->client->sess.cmDBid <= 0) {
+			trap_SendServerCommand(clientNum, "print \"ERROR: Please login first. Use the /cmlogin <user> <pass> command.\n\"");
+			return;
+		}
+
+		trap_Argv(1, user, sizeof(user)); // login
+		trap_Argv(2, pass, sizeof(pass)); // password
+
+		_snprintf_s(credentials, sizeof(credentials), _TRUNCATE, "%i,%i,%s", ent->client->ps.clientNum, ent->client->sess.cmDBid, "jedi_academy");
+
+		sendExtensionCmd("getstats", credentials, 0); //boardcast to all since we will use either sqlite or mysql
 	}
 	else if (Q_stricmp(cmd, "clanlogin" ) == 0) // client command: clanlogin <password>
     { 

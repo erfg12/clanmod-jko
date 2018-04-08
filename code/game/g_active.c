@@ -755,20 +755,20 @@ void ClientTimerActions( gentity_t *ent, int msec ) {
 				}
 		}
 
-		if (client->cmClanTimer >= 1 && /*client->csTimeLeft == 0 &&*/ client->pers.amclanreserved == 1 &&
+		if (client->cmClanTimer >= 1 && /*client->csTimeLeft == 0 &&*/ client->pers.amclanreserved == qtrue &&
 		!(ent->r.svFlags & SVF_BOT) && *cm_clanTag.string && cm_clanTag.string[0] && !(ent->r.svFlags & SVF_CLAN)){
 			trap_SendServerCommand( ent-g_entities, va("cp \"^1Your clan tag is reserved for members only!\n^1Please change it, or login in ^3%d seconds^1,\n^1or your clan name will be removed.\n\"", client->cmClanTimer ));
 			client->cmClanTimer--;
 		}
 		
-		if (client->cmClanTimer == 0 && client->pers.amclanreserved == 1 && !(ent->r.svFlags & SVF_CLAN)){
-			client->pers.amclanreserved = 0;
+		if (client->cmClanTimer == 0 && client->pers.amclanreserved == qtrue && !(ent->r.svFlags & SVF_CLAN)){
+			client->pers.amclanreserved = qfalse;
 			uwRename(&g_entities[clientNum], "Padawan");
 			trap_SendServerCommand( ent-g_entities, va("print \"The clan name you were using was protected, you have been forcefully renamed.\n\"") );
 		}
 
 		//cm Center Screen MOTD
-		if (client->csTimeLeft && client->pers.amclanreserved == 0 && *cm_motd.string && cm_motd.string[0]) {
+		if (client->csTimeLeft && client->pers.amclanreserved == qfalse && *cm_motd.string && cm_motd.string[0]) {
 			trap_Cvar_VariableStringBuffer( "cm_motd", motdString, MAX_STRING_CHARS );
 			M_StringEscapeToEnters( motdString, motdWithNewLines, MAX_STRING_CHARS );
 			trap_SendServerCommand( ent->client->ps.clientNum, va ( "cp \"^1%s\n%s\nTimeLeft: ^3%d\"", GAMEVERSION, motdWithNewLines, ent->client->csTimeLeft ) );
