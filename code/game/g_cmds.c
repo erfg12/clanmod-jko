@@ -78,13 +78,6 @@ typedef enum
 	E_SHAKE
 } emote_type_t;
 
-#ifdef _WIN32
-#include "windows.h"
-#endif
-#ifdef __linux__
-#include <pthread.h>
-#endif
-
 //cm /rename admin command function
 void uwRename(gentity_t *player, const char *newname) 
 { 
@@ -94,35 +87,6 @@ void uwRename(gentity_t *player, const char *newname)
    Info_SetValueForKey(userinfo, "name", newname);
    trap_SetUserinfo(clientNum, userinfo); 
    ClientUserinfoChanged(clientNum);
-}
-
-void sendExtensionCmd(char *command, char *text, char *pipename) {
-	char discordMsg[999];
-	unsigned long dwWritten;
-	_snprintf_s(discordMsg, sizeof(discordMsg), _TRUNCATE, "%s|%s", command, text);
-	//G_Printf("[DEBUG] sending:%s connections:%i\n", discordMsg, pConnections);
-	for (int i = 0; i < pConnections; i++)
-	{
-		if (pipename != 0 && Q_stricmp(pipename, pipeNames[i]) != 0) return;
-		G_Printf("[DEBUG] SENDING: %s TO PIPE: %s\n", discordMsg, pipeNames[i]);
-#ifdef WIN32
-		if (pipeHandles[i] == INVALID_HANDLE_VALUE) {
-			G_Printf("%s (#%i) handle is invalid", pipeNames[i], i);
-		}
-		else {
-			ConnectNamedPipe(pipeHandles[i], NULL);
-			WriteFile(pipeHandles[i], discordMsg, 999, &dwWritten, NULL);
-			//G_Printf("%s (#%i) handle is valid", pipeNames[i], i);
-		}
-			
-#endif
-#ifdef __linux__
-		fd = open(fifoNames[i], O_WRONLY);
-		fgets(discordMsg, 999, stdin);
-		write(fifoNames[i], discordMsg, strlen(discordMsg) + 1);
-		close(fifoNames[i]);
-#endif
-	}
 }
 
 /*
@@ -1303,7 +1267,6 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 		char discordMsg[999];
 		if (!(ent->r.svFlags & SVF_BOT)) {
 			_snprintf_s(discordMsg, sizeof(discordMsg), _TRUNCATE, "[JKO]%s: %s", ent->client->pers.netname, chatText);
-			sendExtensionCmd("say", discordMsg, 0); //say to all extensions
 		}
 		Com_sprintf (name, sizeof(name), "%s%c%c"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
 		color = COLOR_GREEN;
@@ -3064,7 +3027,6 @@ void ClientCommand( int clientNum ) {
 		}
 		return;
 	}
-
 	if (Q_stricmp (cmd, "give") == 0)
 	{
 		Cmd_Give_f (ent);
@@ -3121,52 +3083,7 @@ void ClientCommand( int clientNum ) {
 		trap_SendServerCommand( ent-g_entities, "print \"\n^1=== ^7COMMANDS ^1===\n\n^5/showmotd - Show the MOTD\n/knockmedown - Knock yourself down\n/clanlogin - Log in as a clan member\n/clanlogout - Log out of clan membership\n/adminlogin - Log in as an admin\n/adminlogout - Log out of admin\n/clansay - Talk to clan members\n/adminsay - Talk to admins\n/report - Report a message to admins\n/ignore - Ignore a clients chat\n/who - View clients & status\n/origin - Your X Y Z coordinates\n\n\"" );
 	}
 	//cm CLIENT CMDS
-	else if (Q_stricmp(cmd, "cmlogin") == 0) {
-		char	user[250];
-		char	pass[250];
-		char	credentials[500];
-
-		trap_Argv(1, user, sizeof(user)); // login
-		trap_Argv(2, pass, sizeof(pass)); // password
-
-		_snprintf_s(credentials, sizeof(credentials), _TRUNCATE, "%i,%s,%s", ent->client->ps.clientNum, user, pass);
-
-		sendExtensionCmd("login", credentials, 0); //boardcast to all since we will use either sqlite or mysql
-	}
-	else if (Q_stricmp(cmd, "cmregister") == 0) {
-		char	user[250];
-		char	pass[250];
-		char	credentials[500];
-
-		if (ent->client->sess.cmDBid > 0) {
-			trap_SendServerCommand(clientNum, "print \"ERROR: You are already logged in as a clan mod user.\n\"");
-			return;
-		}
-
-		trap_Argv(1, user, sizeof(user)); // login
-		trap_Argv(2, pass, sizeof(pass)); // password
-
-		_snprintf_s(credentials, sizeof(credentials), _TRUNCATE, "%i,%s,%s", ent->client->ps.clientNum, user, pass);
-
-		sendExtensionCmd("register", credentials, 0); //boardcast to all since we will use either sqlite or mysql
-	}
-	else if (Q_stricmp(cmd, "cmstats") == 0) {
-		char	user[250];
-		char	pass[250];
-		char	credentials[500];
-
-		if (ent->client->sess.cmDBid <= 0) {
-			trap_SendServerCommand(clientNum, "print \"ERROR: Please login first. Use the /cmlogin <user> <pass> command.\n\"");
-			return;
-		}
-
-		trap_Argv(1, user, sizeof(user)); // login
-		trap_Argv(2, pass, sizeof(pass)); // password
-
-		_snprintf_s(credentials, sizeof(credentials), _TRUNCATE, "%i,%i,%s", ent->client->ps.clientNum, ent->client->sess.cmDBid, "jedi_academy");
-
-		sendExtensionCmd("getstats", credentials, 0); //boardcast to all since we will use either sqlite or mysql
-	}
+	
 	else if (Q_stricmp(cmd, "clanlogin" ) == 0) // client command: clanlogin <password>
     { 
 		char   pass[MAX_STRING_CHARS];

@@ -1135,9 +1135,6 @@ extern	vmCvar_t	cm_clanLogout_saying;
 extern	vmCvar_t	cm_botsattackhumans;
 extern	vmCvar_t	cm_extensions;
 extern	vmCvar_t	cm_uniquePipeName;
-qhandle_t pipeHandles[100]; //stored pipes for extensions
-char pipeNames[100][100];
-char fifoNames[100][100]; //for linux
 extern int pConnections;
 //cm END
 
